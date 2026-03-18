@@ -108,7 +108,7 @@ if nc -z -w 2 "$ROUTER_IP" 80 2>/dev/null; then
   HTTP_OPEN=true
   # Try to get router model from HTTP response
   HTTP_RESP=$(curl -s -m 3 -o /dev/null -w "%{redirect_url}" "http://${ROUTER_IP}/" 2>/dev/null || true)
-  HTTP_TITLE=$(curl -s -m 3 "http://${ROUTER_IP}/" 2>/dev/null | grep -oiP '<title>\K[^<]+' | head -1 || true)
+  HTTP_TITLE=$(curl -s -m 3 "http://${ROUTER_IP}/" 2>/dev/null | sed -n 's/.*<[Tt][Ii][Tt][Ll][Ee]>\([^<]*\)<.*/\1/p' | head -1 || true)
   
   # Identify by HTTP fingerprint
   if [ -n "$HTTP_TITLE" ]; then

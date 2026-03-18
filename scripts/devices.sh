@@ -40,7 +40,7 @@ STATE_FILE = sys.argv[1]
 VENDORS = {
     "4c:ba:d7": ("LG", "smart_tv"),     "a8:23:fe": ("LG", "smart_tv"),
     "e8:70:72": ("BroadLink", "ir_remote"), "78:0f:77": ("BroadLink", "ir_remote"),
-    "24:db:ed": ("BroadLink", "ir_remote"), "34:ea:34": ("BroadLink", "ir_remote"),
+    "24:df:a7": ("BroadLink", "ir_remote"), "34:ea:34": ("BroadLink", "ir_remote"),
     "dc:a6:32": ("Raspberry Pi", "sbc"), "b8:27:eb": ("Raspberry Pi", "sbc"),
     "f0:2f:74": ("Google", "smart_speaker"), "20:df:b9": ("Google", "chromecast"),
     "74:6d:e4": ("Amazon", "echo"),      "fc:65:de": ("Amazon", "echo"),

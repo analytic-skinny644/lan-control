@@ -14,7 +14,15 @@ fi
 
 ROUTER_IP=$(python3 -c "import json; print(json.load(open('$STATE_FILE'))['router_ip'])" 2>/dev/null)
 SSH_OPEN=$(python3 -c "import json; print(json.load(open('$STATE_FILE'))['ssh']['open'])" 2>/dev/null)
-USER_PASSWORD="${1:-}"
+# Read password from arg or prompt (avoid exposing in ps aux)
+if [ -n "${1:-}" ]; then
+  USER_PASSWORD="$1"
+elif [ -t 0 ]; then
+  read -r -s -p "SSH password (empty to skip): " USER_PASSWORD
+  echo >&2
+else
+  USER_PASSWORD=""
+fi
 
 if [ "$SSH_OPEN" != "True" ]; then
   >&2 echo "❌ SSH not open on $ROUTER_IP"
@@ -124,7 +132,7 @@ if [ -z "$AUTH_METHOD" ]; then
   >&2 echo ""
   >&2 echo "❌ Could not authenticate to $ROUTER_IP"
   >&2 echo "   Try: bash scripts/connect.sh \"your-password\""
-  echo '{"error": "auth_failed", "router_ip": "'$ROUTER_IP'"}'
+  printf '{"error": "auth_failed", "router_ip": "%s"}\n' "$ROUTER_IP"
   exit 1
 fi
 

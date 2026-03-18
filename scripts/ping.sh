@@ -14,7 +14,7 @@ fi
 ROUTER_IP=$(python3 -c "import json; print(json.load(open('$STATE_FILE'))['router_ip'])")
 
 # If target looks like a hostname, resolve via DHCP leases
-if ! echo "$TARGET" | grep -qP '^\d+\.\d+\.\d+\.\d+$'; then
+if ! echo "$TARGET" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'; then
   >&2 echo "🔍 Looking up '$TARGET' in DHCP leases..."
   RESOLVED=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "root@${ROUTER_IP}" \
     "grep -i '$TARGET' /tmp/dhcp.leases 2>/dev/null | awk '{print \$3}' | head -1" 2>/dev/null)
@@ -34,7 +34,7 @@ RESULT=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "root@${ROUTER_IP}"
 echo "$RESULT"
 
 if echo "$RESULT" | grep -q "0% packet loss\|0 packets lost"; then
-  echo '{"ip": "'$TARGET'", "status": "online"}'
+  printf '{"ip": "%s", "status": "online"}\n' "$TARGET"
 else
-  echo '{"ip": "'$TARGET'", "status": "offline"}'
+  printf '{"ip": "%s", "status": "offline"}\n' "$TARGET"
 fi
