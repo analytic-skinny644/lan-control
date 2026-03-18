@@ -3,7 +3,7 @@
 # Execute a command on the router via SSH
 set -euo pipefail
 
-STATE_FILE="${HOME}/.openclaw/router-control/state.json"
+STATE_FILE="${HOME}/.lan-control/state.json"
 
 if [ ! -f "$STATE_FILE" ]; then
   >&2 echo "❌ Not connected. Run discover.sh && connect.sh first."

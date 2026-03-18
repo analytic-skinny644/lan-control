@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import registry
 
 SCRIPT_DIR = Path(__file__).parent / "scripts"
-STATE_FILE = Path.home() / ".openclaw" / "router-control" / "state.json"
+STATE_FILE = Path.home() / ".lan-control" / "state.json"
 
 
 def run_script(script_name: str, *args) -> subprocess.CompletedProcess:

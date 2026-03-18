@@ -3,7 +3,7 @@
 # List all LAN devices from router DHCP leases with type identification
 set -euo pipefail
 
-STATE_DIR="${HOME}/.openclaw/router-control"
+STATE_DIR="${HOME}/.lan-control"
 STATE_FILE="${STATE_DIR}/state.json"
 
 if [ ! -f "$STATE_FILE" ]; then

@@ -3,7 +3,7 @@
 # Check if a device is online (by IP or DHCP hostname lookup)
 set -euo pipefail
 
-STATE_FILE="${HOME}/.openclaw/router-control/state.json"
+STATE_FILE="${HOME}/.lan-control/state.json"
 TARGET="${1:?Usage: ping.sh <ip|hostname>}"
 
 if [ ! -f "$STATE_FILE" ]; then
