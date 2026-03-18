@@ -1,0 +1,60 @@
+device:
+  name: "E-Ink Display"
+  type: iot
+  vendor: Generic
+  protocol: http
+
+discovery:
+  mac_prefixes:
+    - "dc:4f:22"       # Espressif (ESP32-based e-ink)
+    - "24:6f:28"       # Espressif
+    - "a4:cf:12"       # Espressif
+    - "30:ae:a4"       # Espressif
+    - "7c:df:a1"       # Espressif
+  hostname_patterns:
+    - "(?i)eink"
+    - "(?i)e.?paper"
+    - "(?i)esp.?ink"
+    - "(?i)inkplate"
+    - "(?i)waveshare"
+    - "(?i)lilygo"
+    - "(?i)trmnl"
+
+connection:
+  method: http
+  port: 80
+
+commands:
+  display_image:
+    description: "Display image (BMP/PNG)"
+    action: "POST /display"
+    params: ["image_path"]
+  clear:
+    description: "Clear screen"
+    action: "POST /clear"
+  refresh:
+    description: "Force full refresh"
+    action: "POST /refresh"
+  status:
+    description: "Get device status (battery, WiFi, firmware)"
+    action: "GET /status"
+  set_text:
+    description: "Display text"
+    action: "POST /text"
+    params: ["text", "font_size"]
+  sleep:
+    description: "Enter deep sleep"
+    action: "POST /sleep"
+    params: ["seconds"]
+  ota_update:
+    description: "OTA firmware update"
+    action: "POST /update"
+    params: ["firmware_url"]
+
+notes: |
+  - Most e-ink displays are ESP32-based with HTTP API
+  - Common brands: Waveshare, LilyGo T5, Inkplate, TRMNL
+  - Image format varies: some need BMP, some accept PNG
+  - Full refresh takes 2-3 seconds, partial refresh ~0.5s
+  - Battery-powered models use deep sleep between updates
+  - ESPHome-based displays use different API (REST/native)

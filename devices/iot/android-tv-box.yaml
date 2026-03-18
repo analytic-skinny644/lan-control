@@ -1,0 +1,84 @@
+device:
+  name: "Android TV Box"
+  type: iot
+  vendor: Generic
+  protocol: adb
+
+discovery:
+  mac_prefixes:
+    - "20:01:25"       # H616/H618 Allwinner
+    - "00:e0:4c"       # Realtek (common in TV boxes)
+    - "c8:2b:96"       # Amlogic S905/S912
+    - "48:b0:2d"       # Rockchip RK3566/RK3588
+  hostname_patterns:
+    - "(?i)android"
+    - "(?i)tv.?box"
+    - "(?i)h616"
+    - "(?i)h618"
+    - "(?i)s905"
+    - "(?i)tanix"
+    - "(?i)x96"
+    - "(?i)hk1"
+
+connection:
+  method: adb
+  port: 5555
+  alt_methods:
+    - method: ssh
+      port: 8022
+      notes: "Termux SSH (if installed)"
+
+commands:
+  shell:
+    description: "Run shell command"
+    action: "adb shell"
+    params: ["command"]
+  install:
+    description: "Install APK"
+    action: "adb install"
+    params: ["apk_path"]
+  screenshot:
+    description: "Screenshot"
+    action: "adb exec-out screencap -p"
+  reboot:
+    description: "Reboot"
+    action: "adb reboot"
+  input_text:
+    description: "Type text"
+    action: "adb shell input text"
+    params: ["text"]
+  input_tap:
+    description: "Tap screen"
+    action: "adb shell input tap"
+    params: ["x", "y"]
+  input_key:
+    description: "Send key event"
+    action: "adb shell input keyevent"
+    params: ["keycode"]
+    keycodes:
+      KEYCODE_HOME: 3
+      KEYCODE_BACK: 4
+      KEYCODE_DPAD_UP: 19
+      KEYCODE_DPAD_DOWN: 20
+      KEYCODE_DPAD_LEFT: 21
+      KEYCODE_DPAD_RIGHT: 22
+      KEYCODE_ENTER: 66
+      KEYCODE_VOLUME_UP: 24
+      KEYCODE_VOLUME_DOWN: 25
+      KEYCODE_POWER: 26
+  list_packages:
+    description: "List installed apps"
+    action: "adb shell pm list packages"
+  launch_app:
+    description: "Launch app"
+    action: "adb shell monkey -p {package} -c android.intent.category.LAUNCHER 1"
+    params: ["package"]
+  get_ip:
+    description: "Get device IP"
+    action: "adb shell ip addr show wlan0"
+
+notes: |
+  - ADB over WiFi: enable in Settings → Developer Options → ADB over network
+  - Termux alternative: SSH on port 8022 (password or key auth)
+  - Common SoCs: Allwinner H616/H618, Amlogic S905/S912, Rockchip RK3566
+  - H618 boxes often run Android + Termux rather than Armbian
