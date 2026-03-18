@@ -206,3 +206,10 @@ scripts/             ← Shell scripts (discover, connect, health)
 ## License
 
 [Apache-2.0](LICENSE)
+## Documentation
+
+- [Contributing Guide](references/contributing.md)
+- [Device Schema](references/device-schema.md)
+- [Router Profiles](references/router-profiles.md)
+- [Troubleshooting](references/troubleshooting.md)
+
