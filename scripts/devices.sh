@@ -23,10 +23,45 @@ LEASES=$(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "root@${ROUTER_IP}"
   echo ""
 ' 2>/dev/null)
 
+# Fallback: ARP table if SSH fails (no router access needed)
 if [ -z "$LEASES" ]; then
-  >&2 echo "❌ No DHCP leases found"
-  echo '[]'
-  exit 1
+  >&2 echo "⚠️  SSH DHCP scan failed, falling back to local ARP table..."
+  OS="$(uname -s)"
+
+  # Ping subnet to populate ARP cache
+  SUBNET=$(echo "$ROUTER_IP" | cut -d. -f1-3)
+  >&2 echo "   Pinging ${SUBNET}.0/24 to populate ARP cache..."
+  for i in $(seq 1 254); do
+    ping -c 1 -W 1 "${SUBNET}.${i}" >/dev/null 2>&1 &
+  done
+  wait 2>/dev/null
+
+  case "$OS" in
+    Darwin)
+      LEASES=$(arp -a 2>/dev/null | awk -F'[() ]' '
+        /at [0-9a-f]/ {
+          # Format: host (ip) at mac on iface
+          for(i=1;i<=NF;i++) {
+            if($i ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/) ip=$i
+            if($i ~ /^[0-9a-f]+:[0-9a-f]+:/) mac=$i
+          }
+          if(ip && mac) print "0 " mac " " ip " *"
+        }')
+      ;;
+    Linux)
+      LEASES=$(arp -n 2>/dev/null | awk '
+        NR>1 && $3 ~ /[0-9a-f]:/ {
+          print "0 " $3 " " $1 " *"
+        }')
+      ;;
+  esac
+
+  if [ -z "$LEASES" ]; then
+    >&2 echo "❌ No devices found via ARP either"
+    echo '[]'
+    exit 1
+  fi
+  >&2 echo "   Found devices via ARP (MAC + IP only, no hostnames)"
 fi
 
 # Parse leases and identify devices
