@@ -63,6 +63,9 @@ try_password_auth() {
   elif command -v sshpass >/dev/null 2>&1; then
     sshpass -p "$pw" ssh -o StrictHostKeyChecking=no -o ConnectTimeout=5 "root@${ROUTER_IP}" "echo PASS_AUTH_OK" 2>/dev/null | grep -q "PASS_AUTH_OK"
   else
+    >&2 echo "   ⚠️  Password auth requires 'expect' or 'sshpass'."
+    >&2 echo "      macOS: brew install expect  (or: brew install hudochenkov/sshpass/sshpass)"
+    >&2 echo "      Linux: apt install expect  (or: apt install sshpass)"
     return 1
   fi
 }
@@ -159,3 +162,10 @@ PYEOF
 >&2 echo ""
 >&2 echo "✅ Connected to $ROUTER_IP ($MODEL)"
 >&2 echo "   Auth: $AUTH_METHOD"
+
+# Hint: set up key auth for passwordless access
+if [ "$AUTH_METHOD" = "password" ]; then
+  >&2 echo ""
+  >&2 echo "💡 Tip: Set up SSH key for passwordless access:"
+  >&2 echo "   ssh-copy-id root@${ROUTER_IP}"
+fi

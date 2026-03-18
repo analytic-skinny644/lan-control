@@ -39,13 +39,15 @@ A CLI tool that discovers and controls every device on your home network — LG 
 ```bash
 git clone https://github.com/ythx-101/lan-control.git
 cd lan-control
-pip install pyyaml   # only dependency
+pip install -r requirements.txt
 ```
 
 ```bash
 python3 cli.py discover                    # Find your router
+python3 cli.py connect                     # SSH into router (auto key/password)
 python3 cli.py devices                     # List all LAN devices
 python3 cli.py commands lg-webos           # Show available commands
+python3 cli.py control openwrt uptime      # Execute command on device
 python3 cli.py health                      # Router health check
 ```
 
@@ -75,27 +77,31 @@ $ python3 cli.py commands lg-webos
 
 ## Supported Devices
 
-| Type | Devices | Protocol | Status |
-|------|---------|----------|--------|
-| **Router** | OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti | SSH/HTTP API | ✅ Verified |
-| **TV** | LG webOS, Samsung Tizen, Roku | WebSocket/HTTP | ✅ Verified |
-| **IR Remote** | BroadLink RM4, Tuya IR | UDP/HTTP | ✅ Verified |
-| **Android Box** | H616/H618/S905/RK3566 | ADB/SSH | ✅ Verified |
-| **Speaker** | Google Nest, Amazon Echo | Cast/HTTP | 📝 Community |
-| **Camera** | Reolink, Hikvision | HTTP | 📝 Community |
-| **AC** | Generic IR (via BroadLink) | IR Bridge | ✅ Verified |
-| **IoT** | ESP/Tuya, Tasmota | HTTP/MQTT | 📝 Community |
+| Type | Devices | Protocol | Control | Status |
+|------|---------|----------|---------|--------|
+| **Router** | OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti | SSH/HTTP API | `ssh` driver | ✅ Verified |
+| **TV** | LG webOS | WebSocket (SSAP) | planned | ✅ Profile |
+| **TV** | Samsung Tizen, Roku | HTTP | planned | 📝 Planned |
+| **IR Remote** | BroadLink RM4 | UDP/HTTP | planned | ✅ Profile |
+| **Android Box** | H616/H618/S905/RK3566 | ADB/SSH | `adb` driver | ✅ Verified |
+| **E-ink** | ESP32 displays (Waveshare, LilyGo, TRMNL) | HTTP | `http` driver | ✅ Profile |
+| **Speaker** | Google Nest, Amazon Echo | Cast/HTTP | planned | 📝 Planned |
+| **Camera** | Reolink, Hikvision | HTTP | `http` driver | 📝 Planned |
+| **AC** | Generic IR (via BroadLink) | IR Bridge | planned | 📝 Planned |
+| **IoT** | ESP/Tuya, Tasmota | HTTP/MQTT | `http` driver | 📝 Planned |
 
-> **✅ Verified** = tested on real hardware. **📝 Community** = profile contributed, PRs welcome to verify.
+> **✅ Verified** = tested on real hardware with working driver. **✅ Profile** = YAML profile exists, driver in progress. **📝 Planned** = PRs welcome.
 
 ## Built-in Commands
 
 | Command | Description |
 |---------|-------------|
 | `discover` | Auto-detect router (gateway → SSH → HTTP → ARP fallback) |
-| `devices` | Scan LAN devices (SSH DHCP → ARP → nmap → mDNS fallback) |
+| `connect [password]` | SSH into router (key → password → defaults, auto-fallback) |
+| `devices` | Scan LAN devices (SSH DHCP → ARP fallback) |
+| `supported` | List all supported device types from YAML profiles |
 | `commands <device>` | List available commands for a device type |
-| `run <command>` | Execute command on router |
+| `control <device> <cmd> [params]` | **Execute command on a device** (SSH/ADB/HTTP) |
 | `health` | Router health (memory, WireGuard, DNS, device ping) |
 | `ping <ip\|hostname>` | Check if a device is online |
 

@@ -86,11 +86,37 @@ def cmd_commands(args):
 
 def cmd_control(args):
     """Control a device."""
-    # This is a placeholder - actual implementation depends on device protocol
-    print(f"Control: {args.device} {args.command}")
-    print("Note: Device control via registry not yet implemented")
-    print("Use shell scripts for direct control:")
-    print("  bash scripts/run.sh <router-command>")
+    import drivers
+
+    device = registry.get_device(args.device)
+    if not device:
+        print(f"Unknown device: {args.device}", file=sys.stderr)
+        print("Use: cli.py supported  to see available devices", file=sys.stderr)
+        sys.exit(1)
+
+    # Try to find device IP from state
+    if "ip" not in device and STATE_FILE.exists():
+        with open(STATE_FILE) as f:
+            state = json.load(f)
+        for d in state.get("devices", []):
+            if d.get("type") == device.get("type") or d.get("hostname", "").lower().find(args.device.replace("-", "")) >= 0:
+                device["ip"] = d["ip"]
+                break
+
+    result = drivers.execute(device, args.cmd_name, args.params if hasattr(args, 'params') else [])
+
+    # JSON to stdout (agent-friendly)
+    print(json.dumps(result, indent=2))
+
+    # Human summary to stderr
+    if result.get("ok"):
+        output = result.get("output", "")
+        if output:
+            print(output, file=sys.stderr)
+        print(f"✅ {args.device} → {args.cmd_name}", file=sys.stderr)
+    else:
+        print(f"❌ {result.get('error', 'unknown error')}", file=sys.stderr)
+        sys.exit(1)
 
 
 def cmd_health(args):
@@ -113,12 +139,14 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  cli.py discover           # Discover router and LAN devices
-  cli.py devices            # List discovered devices
-  cli.py supported          # List supported device types
-  cli.py commands lg-webos  # Show commands for LG webOS TV
-  cli.py health             # Health check
-  cli.py ping 192.168.1.100 # Ping a device
+  cli.py discover                            # Discover router and LAN devices
+  cli.py devices                             # List discovered devices
+  cli.py supported                           # List supported device types
+  cli.py commands lg-webos                   # Show commands for LG webOS TV
+  cli.py control openwrt dhcp_leases         # Control a device
+  cli.py control android-tv-box reboot       # Reboot Android TV box
+  cli.py health                              # Health check
+  cli.py ping 192.168.1.100                  # Ping a device
         """
     )
     
@@ -144,7 +172,7 @@ Examples:
     # control
     p_control = subparsers.add_parser("control", help="Control a device")
     p_control.add_argument("device", help="Device to control")
-    p_control.add_argument("command", help="Command to send")
+    p_control.add_argument("cmd_name", help="Command to send")
     p_control.add_argument("params", nargs="*", help="Command parameters")
     
     # health
