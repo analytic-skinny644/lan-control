@@ -1,0 +1,23 @@
+device:
+  name: "OpenWrt Router"
+  type: router
+  vendor: OpenWrt
+  protocol: ssh
+discovery:
+  http_fingerprints: ["LuCI", "OpenWrt"]
+  ssh_banners: ["dropbear"]
+  hostname_patterns: ["(?i)openwrt", "(?i)gl-"]
+connection:
+  method: ssh
+  port: 22
+  auth: { type: password, defaults: ["", "admin", "root"] }
+commands:
+  dhcp_leases: { description: "List DHCP devices", action: "cat /tmp/dhcp.leases" }
+  reboot: { description: "Reboot router", action: "reboot" }
+  memory: { description: "Memory usage", action: "free -m" }
+  uptime: { description: "Uptime", action: "uptime" }
+  wifi_clients: { description: "WiFi clients", action: "iwinfo wlan0 assoclist 2>/dev/null; iwinfo wlan1 assoclist 2>/dev/null" }
+  wg_status: { description: "WireGuard status", action: "wg show 2>/dev/null || echo 'Not configured'" }
+notes: |
+  GL.iNet runs OpenWrt with custom skin. Dropbear SSH differs from OpenSSH.
+  DHCP leases: /tmp/dhcp.leases (standard OpenWrt).

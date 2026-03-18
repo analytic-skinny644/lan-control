@@ -1,0 +1,33 @@
+# Device Profile Template
+# Copy this file to devices/<category>/<device-name>.yaml
+
+device:
+  name: "Device Name"           # Human-readable name
+  type: tv                      # router | tv | ir-remote | speaker | camera | ac | iot
+  vendor: "Brand"               # Manufacturer
+  protocol: http                # ssap | http | udp | adb | ssh | mqtt | cast
+
+discovery:
+  mac_prefixes:                 # First 3 bytes of MAC address (find at macaddress.io)
+    - "aa:bb:cc"
+  hostname_patterns:            # Regex patterns for DHCP hostname
+    - "(?i)device-name"
+  mdns_services:                # Optional: mDNS service types
+    - "_http._tcp"
+
+connection:
+  method: http                  # http | websocket | udp | ssh | adb
+  port: 8080                    # Default port
+  auth:                         # Optional
+    type: none                  # none | token | password | pairing
+
+commands:
+  power_off:
+    description: "Power off"
+    action: "POST /api/power/off"
+  power_on:
+    description: "Power on"
+    action: "WOL"               # Wake-on-LAN (needs MAC)
+
+notes: |
+  Any gotchas, known issues, or tips for this device.

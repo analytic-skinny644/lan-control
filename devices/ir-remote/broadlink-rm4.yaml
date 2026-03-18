@@ -1,0 +1,18 @@
+device:
+  name: "BroadLink RM4"
+  type: ir-remote
+  vendor: BroadLink
+  protocol: udp
+discovery:
+  mac_prefixes: ["e8:70:72", "24:df:a7", "34:ea:34"]
+  hostname_patterns: ["(?i)broadlink", "(?i)rm4"]
+connection:
+  method: udp
+  port: 80
+  auth: { type: token }
+commands:
+  learn_ir: { description: "Learn IR signal", action: "learn" }
+  send_ir: { description: "Send IR signal", action: "send", params: ["code"] }
+  temperature: { description: "Read temperature sensor", action: "check_sensors" }
+notes: |
+  Requires python-broadlink library. IR codes are device-specific.

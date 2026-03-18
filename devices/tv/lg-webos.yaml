@@ -1,0 +1,28 @@
+device:
+  name: "LG webOS TV"
+  type: tv
+  vendor: LG
+  protocol: ssap
+discovery:
+  mac_prefixes: ["4c:ba:d7", "a8:23:fe", "c8:08:e9", "64:95:6c", "38:8c:50"]
+  hostname_patterns: ["(?i)lg.*tv", "(?i)webos", "(?i)LGwebOSTV"]
+connection:
+  method: websocket
+  port: 3000
+  auth: { type: pairing }
+commands:
+  power_off: { description: "Power off", action: "ssap://system/turnOff" }
+  power_on: { description: "Power on (WOL)", action: "WOL" }
+  volume_up: { description: "Volume +", action: "ssap://audio/volumeUp" }
+  volume_down: { description: "Volume -", action: "ssap://audio/volumeDown" }
+  set_volume: { description: "Set volume (0-100)", action: "ssap://audio/setVolume", params: ["volume"] }
+  mute: { description: "Toggle mute", action: "ssap://audio/setMute" }
+  launch_app: { description: "Launch app", action: "ssap://system.launcher/launch", params: ["id"] }
+  get_apps: { description: "List installed apps", action: "ssap://com.webos.applicationManager/listApps" }
+  set_input: { description: "Switch input", action: "ssap://tv/switchInput", params: ["inputId"] }
+  play: { description: "Play", action: "ssap://media.controls/play" }
+  pause: { description: "Pause", action: "ssap://media.controls/pause" }
+  screenshot: { description: "Screenshot", action: "custom://screenshot" }
+notes: |
+  Client key saved after first pairing. WOL needs "Quick Start+" enabled.
+  SSAP WebSocket: port 3000 (ws) or 3001 (wss).
