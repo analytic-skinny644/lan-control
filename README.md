@@ -7,7 +7,7 @@
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg?style=flat-square)](https://www.python.org)
 [![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-blue.svg?style=flat-square)](https://github.com/openclaw/openclaw)
 
-A CLI tool that turns **any SSH-accessible router** into a device discovery and control hub — LG TV, BroadLink IR, Android boxes, cameras, and [many more](#supported-devices) — powered by DHCP table scanning and community-maintained YAML device profiles.
+A CLI tool that discovers and controls every device on your home network — LG TV, BroadLink IR, Android boxes, cameras, and [many more](#supported-devices) — powered by multi-method LAN scanning and community-maintained YAML device profiles.
 
 ---
 
@@ -26,8 +26,9 @@ A CLI tool that turns **any SSH-accessible router** into a device discovery and 
 
 ## Highlights
 
-- **Universal** — Not tied to any router brand. Works with OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti.
-- **Zero config** — Auto-discovers your router (default gateway + SSH fingerprint + HTTP probe). No manual IP entry.
+- **Universal** — Not tied to any router brand or SSH. Works with OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti — and even without router access.
+- **Multi-method discovery** — SSH into router (best) → ARP scan → nmap → mDNS/UPnP. Falls back automatically.
+- **Zero config** — Auto-discovers your router and devices. No manual IP entry.
 - **YAML-driven** — Each device type is a `.yaml` file. Adding support = adding a file. No code changes.
 - **Community-driven** — MAC prefix + hostname pattern matching. Drop a YAML, submit a PR, done.
 - **Local-first** — Runs on your Mac/Linux. No cloud, no VPS, no account. Your router, your data.
@@ -76,7 +77,7 @@ $ python3 cli.py commands lg-webos
 
 | Type | Devices | Protocol | Status |
 |------|---------|----------|--------|
-| **Router** | OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti | SSH | ✅ Verified |
+| **Router** | OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti | SSH/HTTP API | ✅ Verified |
 | **TV** | LG webOS, Samsung Tizen, Roku | WebSocket/HTTP | ✅ Verified |
 | **IR Remote** | BroadLink RM4, Tuya IR | UDP/HTTP | ✅ Verified |
 | **Android Box** | H616/H618/S905/RK3566 | ADB/SSH | ✅ Verified |
@@ -91,8 +92,8 @@ $ python3 cli.py commands lg-webos
 
 | Command | Description |
 |---------|-------------|
-| `discover` | Auto-detect router (gateway → SSH → HTTP fingerprint) |
-| `devices` | Scan DHCP table, match against device profiles |
+| `discover` | Auto-detect router (gateway → SSH → HTTP → ARP fallback) |
+| `devices` | Scan LAN devices (SSH DHCP → ARP → nmap → mDNS fallback) |
 | `commands <device>` | List available commands for a device type |
 | `run <command>` | Execute command on router |
 | `health` | Router health (memory, WireGuard, DNS, device ping) |
@@ -143,15 +144,32 @@ That's it. The registry auto-scans all YAML files in `devices/`.
 
 ## How It Works
 
+### Discovery Methods (auto-fallback)
+
+| Method | Needs Router SSH? | What you get | Best for |
+|--------|:-:|-------------|----------|
+| **SSH DHCP scan** | ✅ | All devices with MAC + hostname + IP | OpenWrt, GL.iNet, ASUS Merlin |
+| **ARP table** | ❌ | Devices your machine has talked to | Any network, no router access |
+| **nmap scan** | ❌ | All active IPs + open ports + OS hints | Deep scan, any network |
+| **mDNS/Bonjour** | ❌ | Devices advertising services | Apple TV, Chromecast, printers |
+| **UPnP/SSDP** | ❌ | Devices with UPnP enabled | Smart TVs, speakers, cameras |
+| **Router HTTP API** | ❌ SSH, ✅ Web | Device list via admin API | Xiaomi, Huawei, TP-Link (no SSH) |
+
+> **No SSH? No problem.** lan-control tries SSH first (most complete data), then falls back to local network scanning. You always get *something*.
+
+### Architecture
+
 ```
-Router (OpenWrt/GL.iNet/...)
-   │
-   │  SSH → cat /tmp/dhcp.leases
-   │
-   ▼
 lan-control
    │
-   │  MAC prefix + hostname → match devices/*.yaml
+   ├── SSH → router DHCP table     (best: full MAC + hostname)
+   ├── ARP → local ARP cache       (good: MAC + IP)
+   ├── nmap → subnet scan           (good: IP + ports + OS)
+   ├── mDNS → service discovery     (partial: advertising devices)
+   └── UPnP → SSDP broadcast       (partial: UPnP devices)
+   │
+   ▼
+MAC prefix + hostname → match devices/*.yaml
    │
    ▼
 Identified devices → native protocol commands
