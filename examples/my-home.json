@@ -1,0 +1,47 @@
+{
+  "description": "Example: A typical home network discovered by router-control",
+  "router": {
+    "ip": "192.168.1.1",
+    "model": "OpenWrt 23.05",
+    "ssh_user": "root",
+    "ssh_auth": "key"
+  },
+  "devices": [
+    {
+      "ip": "192.168.1.100",
+      "mac": "4c:ba:d7:xx:xx:xx",
+      "hostname": "LGwebOSTV",
+      "identified_as": "lg-webos",
+      "type": "tv",
+      "vendor": "LG",
+      "commands_available": ["power_on", "power_off", "volume_up", "volume_down", "set_volume", "launch_app", "get_apps", "set_input"]
+    },
+    {
+      "ip": "192.168.1.101",
+      "mac": "e8:70:72:xx:xx:xx",
+      "hostname": "BroadLink-Remote-3f-0d-5d",
+      "identified_as": "broadlink",
+      "type": "ir-remote",
+      "vendor": "BroadLink",
+      "commands_available": ["send_ac", "send_tv", "status"]
+    },
+    {
+      "ip": "192.168.1.102",
+      "mac": "dc:a6:32:12:34:56",
+      "hostname": "raspberrypi",
+      "identified_as": null,
+      "type": "unknown",
+      "vendor": "Raspberry Pi",
+      "note": "No device profile for generic Raspberry Pi — add one to devices/iot/ if you want to control it"
+    },
+    {
+      "ip": "192.168.1.103",
+      "mac": "f8:ff:c2:aa:bb:cc",
+      "hostname": "MacBookPro",
+      "identified_as": null,
+      "type": "computer",
+      "vendor": "Apple",
+      "note": "Personal devices are detected but not controllable by default"
+    }
+  ]
+}
